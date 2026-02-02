@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pirthday Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Pirthday Calculator</h1>
+      <p class="tagline">Celebrate your birthday in multiples of π</p>
+    </header>
+
+    <section class="input-section">
+      <label for="birthday">Enter your birthday</label>
+      <input type="date" id="birthday" name="birthday">
+      <button id="calculate" type="button">Calculate Pirthdays</button>
+    </section>
+
+    <section id="results" class="results hidden">
+      <h2>Your Pirthdays</h2>
+      <div id="pirthday-list" class="pirthday-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>π ≈ 3.14159265359...</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

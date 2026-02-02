@@ -1,0 +1,230 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --color-bg: #0f0f1a;
+  --color-surface: #1a1a2e;
+  --color-primary: #7c3aed;
+  --color-primary-hover: #8b5cf6;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-accent: #f472b6;
+  --color-past: #475569;
+  --color-future: #22c55e;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.container {
+  flex: 1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tagline {
+  color: var(--color-text-muted);
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.input-section {
+  background: var(--color-surface);
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+label {
+  font-weight: 500;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+input[type="date"] {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  border: 2px solid transparent;
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: border-color 0.2s;
+}
+
+input[type="date"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+button {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: calc(var(--radius) - 4px);
+  background: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+button:hover {
+  background: var(--color-primary-hover);
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.results {
+  margin-top: 2rem;
+}
+
+.results.hidden {
+  display: none;
+}
+
+.results h2 {
+  font-size: 1.5rem;
+  margin: 0 0 1.5rem;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.pirthday-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pirthday-card {
+  background: var(--color-surface);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  border-left: 4px solid var(--color-past);
+}
+
+.pirthday-card.future {
+  border-left-color: var(--color-future);
+}
+
+.pirthday-card.special {
+  border-left-color: var(--color-accent);
+  background: linear-gradient(135deg, var(--color-surface), rgba(244, 114, 182, 0.1));
+}
+
+.pirthday-info {
+  min-width: 0;
+}
+
+.pirthday-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.pirthday-label .pi-value {
+  color: var(--color-accent);
+  font-family: 'Cambria Math', 'Times New Roman', serif;
+}
+
+.pirthday-date {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.pirthday-status {
+  text-align: right;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.pirthday-status.past {
+  color: var(--color-past);
+}
+
+.pirthday-status.future {
+  color: var(--color-future);
+}
+
+.pirthday-years {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  .input-section {
+    padding: 1.5rem;
+  }
+
+  .pirthday-card {
+    grid-template-columns: 1fr;
+  }
+
+  .pirthday-status {
+    text-align: left;
+  }
+}
