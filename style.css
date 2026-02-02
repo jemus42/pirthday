@@ -211,6 +211,22 @@ footer {
   font-size: 0.9rem;
 }
 
+footer a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+}
+
+footer a:hover {
+  color: var(--color-primary);
+}
+
+footer svg {
+  vertical-align: middle;
+}
+
 @media (max-width: 480px) {
   h1 {
     font-size: 2rem;
