@@ -218,36 +218,72 @@ function renderPirthdays(pirthdays) {
   document.getElementById('results').classList.remove('hidden');
 }
 
+let activeConstant = CONSTANTS.pi;
+let birthday = null;
+
+function applyBranding(c) {
+  document.title = `${c.name} Calculator`;
+  document.querySelector('h1').textContent = `${c.name} Calculator`;
+  document.querySelector('.tagline').textContent =
+    `Celebrate your birthday in multiples of ${c.symbol}`;
+  document.querySelector('.results h2').textContent = `Your ${c.name}s`;
+  document.getElementById('constant-approx').textContent = `${c.symbol} ≈ ${c.approx}`;
+}
+
+function recompute() {
+  if (!birthday) return;
+  renderPirthdays(calculatePirthdays(birthday, activeConstant));
+}
+
+function setConstant(key) {
+  activeConstant = CONSTANTS[key];
+  document.querySelectorAll('.constant-option').forEach((b) => {
+    const on = b.dataset.constant === key;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', String(on));
+  });
+  applyBranding(activeConstant);
+  recompute();
+}
+
 function init() {
   const birthdayInput = document.getElementById('birthday');
   const calculateBtn = document.getElementById('calculate');
 
-  // Set max date to today
   birthdayInput.max = new Date().toISOString().split('T')[0];
-
-  // Set a reasonable min date (150 years ago)
   const minDate = new Date();
   minDate.setFullYear(minDate.getFullYear() - 150);
   birthdayInput.min = minDate.toISOString().split('T')[0];
 
+  document.querySelectorAll('.constant-option').forEach((b) => {
+    b.addEventListener('click', () => setConstant(b.dataset.constant));
+  });
+
   calculateBtn.addEventListener('click', () => {
-    const birthdayValue = birthdayInput.value;
-    if (!birthdayValue) {
+    if (!birthdayInput.value) {
       birthdayInput.focus();
       return;
     }
-
-    const birthday = new Date(birthdayValue + 'T00:00:00');
-    const pirthdays = calculatePirthdays(birthday);
-    renderPirthdays(pirthdays);
+    birthday = new Date(birthdayInput.value + 'T00:00:00');
+    recompute();
   });
 
-  // Also calculate on Enter key
   birthdayInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      calculateBtn.click();
-    }
+    if (e.key === 'Enter') calculateBtn.click();
   });
+
+  document.getElementById('download-ics').addEventListener('click', () => {
+    if (!birthday) return;
+    const ics = buildICS(calculatePirthdays(birthday, activeConstant), activeConstant, birthday);
+    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${activeConstant.key}-pirthdays.ics`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  applyBranding(activeConstant);
 }
 
 if (typeof document !== 'undefined') {
