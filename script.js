@@ -1,7 +1,4 @@
-const PI = Math.PI;
-const E = Math.E;
-
-// Gamma function (for π!) using Lanczos approximation
+// Gamma function (for factorials) using Lanczos approximation
 function gamma(z) {
   if (z < 0.5) {
     return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
@@ -21,50 +18,56 @@ function gamma(z) {
   return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
 }
 
-const PI_FACTORIAL = gamma(PI + 1); // ≈ 7.19
+const MAX_YEARS = 101; // keeps π's original 32-term reach (32π ≈ 100.5 years)
 
-// Special pi-based milestones using various mathematical operations
-const SPECIAL_MILESTONES = [
-  // Roots and powers of pi
-  { multiplier: Math.sqrt(PI), label: '√π', description: 'Square root of pi' },
-  { multiplier: PI * PI, label: 'π²', description: 'Pi squared' },
-  { multiplier: Math.pow(PI, 3), label: 'π³', description: 'Pi cubed' },
-  { multiplier: Math.pow(PI, E), label: 'π^e', description: 'Pi to the power of e' },
-  { multiplier: Math.pow(E, PI), label: 'e^π', description: 'e to the power of pi' },
-  { multiplier: Math.pow(PI, PI), label: 'π^π', description: 'Pi to the power of pi' },
+// Cross-constant "extras" that reference two constants at once.
+const CROSS = {
+  'π^e': Math.pow(Math.PI, Math.E),
+  'e^π': Math.pow(Math.E, Math.PI),
+};
 
-  // n^π series
-  { multiplier: Math.pow(2, PI), label: '2^π', description: '2 to the power of pi' },
-  { multiplier: Math.pow(3, PI), label: '3^π', description: '3 to the power of pi' },
-  { multiplier: Math.pow(4, PI), label: '4^π', description: '4 to the power of pi' },
+const CONSTANTS = {
+  pi: {
+    key: 'pi', symbol: 'π', value: Math.PI, name: 'Pirthday', term: 'pirthday',
+    approx: '3.14159265359…', extras: ['π^e', 'e^π'],
+  },
+  e: {
+    key: 'e', symbol: 'e', value: Math.E, name: 'Eirthday', term: 'eirthday',
+    approx: '2.71828182846…', extras: ['e^π', 'π^e'],
+  },
+};
 
-  // π! and multiples
-  { multiplier: PI_FACTORIAL, label: 'π!', description: 'Pi factorial' },
-  { multiplier: 2 * PI_FACTORIAL, label: '2π!', description: '2 times pi factorial' },
-  { multiplier: 3 * PI_FACTORIAL, label: '3π!', description: '3 times pi factorial' },
-  { multiplier: 4 * PI_FACTORIAL, label: '4π!', description: '4 times pi factorial' },
-  { multiplier: 5 * PI_FACTORIAL, label: '5π!', description: '5 times pi factorial' },
-  { multiplier: 6 * PI_FACTORIAL, label: '6π!', description: '6 times pi factorial' },
-  { multiplier: 7 * PI_FACTORIAL, label: '7π!', description: '7 times pi factorial' },
-  { multiplier: 8 * PI_FACTORIAL, label: '8π!', description: '8 times pi factorial' },
-  { multiplier: 9 * PI_FACTORIAL, label: '9π!', description: '9 times pi factorial' },
-  { multiplier: 10 * PI_FACTORIAL, label: '10π!', description: '10 times pi factorial' },
-  { multiplier: 11 * PI_FACTORIAL, label: '11π!', description: '11 times pi factorial' },
-  { multiplier: 12 * PI_FACTORIAL, label: '12π!', description: '12 times pi factorial' },
-  { multiplier: 13 * PI_FACTORIAL, label: '13π!', description: '13 times pi factorial' },
-  { multiplier: 14 * PI_FACTORIAL, label: '14π!', description: '14 times pi factorial' },
-];
+function buildMilestones(c) {
+  const v = c.value;
+  const s = c.symbol;
+  const fact = gamma(v + 1);
 
-// Generate standard multiples of pi (1π to 32π, where 32π ≈ 100.5 years)
-const STANDARD_MILESTONES = Array.from({ length: 32 }, (_, i) => ({
-  multiplier: (i + 1) * PI,
-  label: `${i + 1}π`,
-  description: `${i + 1} times pi`,
-}));
+  const special = [
+    { multiplier: Math.sqrt(v), label: `√${s}` },
+    { multiplier: v * v, label: `${s}²` },
+    { multiplier: Math.pow(v, 3), label: `${s}³` },
+    { multiplier: Math.pow(v, v), label: `${s}^${s}` },
+    { multiplier: Math.pow(2, v), label: `2^${s}` },
+    { multiplier: Math.pow(3, v), label: `3^${s}` },
+    { multiplier: Math.pow(4, v), label: `4^${s}` },
+  ];
+  for (let n = 1; n <= 14; n++) {
+    special.push({ multiplier: n * fact, label: `${n === 1 ? '' : n}${s}!` });
+  }
+  for (const k of c.extras || []) {
+    if (CROSS[k] != null) special.push({ multiplier: CROSS[k], label: k });
+  }
 
-// Combine and sort all milestones
-const ALL_MILESTONES = [...SPECIAL_MILESTONES, ...STANDARD_MILESTONES]
-  .sort((a, b) => a.multiplier - b.multiplier);
+  const standard = [];
+  for (let n = 1; n * v <= MAX_YEARS; n++) {
+    standard.push({ multiplier: n * v, label: `${n}${s}`, isSpecial: false });
+  }
+
+  return [
+    ...special.map((m) => ({ ...m, isSpecial: true })),
+    ...standard,
+  ].sort((a, b) => a.multiplier - b.multiplier);
+}
 
 function addYearsToDate(date, years) {
   const result = new Date(date);
@@ -120,23 +123,15 @@ function getRelativeTime(date) {
   }
 }
 
-function isSpecialMilestone(milestone) {
-  return SPECIAL_MILESTONES.some(
-    (s) => Math.abs(s.multiplier - milestone.multiplier) < 0.001
-  );
-}
-
-function calculatePirthdays(birthday) {
+function calculatePirthdays(birthday, c) {
   const now = new Date();
-
-  return ALL_MILESTONES.map((milestone) => {
-    const pirthdayDate = addYearsToDate(birthday, milestone.multiplier);
+  return buildMilestones(c).map((m) => {
+    const date = addYearsToDate(birthday, m.multiplier);
     return {
-      ...milestone,
-      date: pirthdayDate,
-      isPast: pirthdayDate < now,
-      isSpecial: isSpecialMilestone(milestone),
-      yearsValue: milestone.multiplier.toFixed(4),
+      ...m,
+      date,
+      isPast: date < now,
+      yearsValue: m.multiplier.toFixed(4),
     };
   });
 }
@@ -200,4 +195,10 @@ function init() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', init);
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', init);
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { CONSTANTS, buildMilestones, calculatePirthdays };
+}
