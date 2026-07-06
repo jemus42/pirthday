@@ -278,7 +278,7 @@ function init() {
     const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${activeConstant.key}-pirthdays.ics`;
+    a.download = `${activeConstant.term}s.ics`;
     a.click();
     URL.revokeObjectURL(url);
   });
