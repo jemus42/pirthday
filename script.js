@@ -176,7 +176,7 @@ function buildICS(pirthdays, c, birthday) {
   ];
 
   for (const p of pirthdays.filter((x) => !x.isPast)) {
-    const end = new Date(p.date.getTime() + 86400000);
+    const end = new Date(p.date.getFullYear(), p.date.getMonth(), p.date.getDate() + 1);
     lines.push('BEGIN:VEVENT');
     lines.push(`UID:${base}-${p.multiplier.toFixed(4)}@pirthday`);
     lines.push(`DTSTAMP:${stamp}`);
