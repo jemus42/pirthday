@@ -82,6 +82,8 @@ label {
 
 input[type="date"] {
   width: 100%;
+  min-width: 0; /* iOS/WebKit date control ignores width:100% and overflows right without this */
+  max-width: 100%;
   padding: 1rem;
   font-size: 1.1rem;
   border: 2px solid transparent;
