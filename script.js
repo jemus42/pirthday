@@ -136,6 +136,61 @@ function calculatePirthdays(birthday, c) {
   });
 }
 
+function icsEscape(text) {
+  return String(text)
+    .replace(/[\\;,]/g, (m) => '\\' + m)
+    .replace(/\n/g, '\\n');
+}
+
+function icsDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}${m}${day}`;
+}
+
+function icsStamp(d) {
+  // 2026-07-06T12:00:00.000Z -> 20260706T120000Z
+  return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+}
+
+function foldLine(line) {
+  if (line.length <= 75) return line;
+  let out = line.slice(0, 75);
+  let rest = line.slice(75);
+  while (rest.length > 74) {
+    out += '\r\n ' + rest.slice(0, 74);
+    rest = rest.slice(74);
+  }
+  return out + '\r\n ' + rest;
+}
+
+function buildICS(pirthdays, c, birthday) {
+  const stamp = icsStamp(new Date());
+  const base = birthday.getTime();
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//pirthday//EN',
+    'CALSCALE:GREGORIAN',
+  ];
+
+  for (const p of pirthdays.filter((x) => !x.isPast)) {
+    const end = new Date(p.date.getTime() + 86400000);
+    lines.push('BEGIN:VEVENT');
+    lines.push(`UID:${base}-${p.multiplier.toFixed(4)}@pirthday`);
+    lines.push(`DTSTAMP:${stamp}`);
+    lines.push(`DTSTART;VALUE=DATE:${icsDate(p.date)}`);
+    lines.push(`DTEND;VALUE=DATE:${icsDate(end)}`);
+    lines.push(`SUMMARY:${icsEscape(`${p.label} ${c.name} · ≈${p.yearsValue} years`)}`);
+    lines.push(`DESCRIPTION:${icsEscape(`Your ${p.label} ${c.term}: ≈${p.yearsValue} years old.`)}`);
+    lines.push('END:VEVENT');
+  }
+
+  lines.push('END:VCALENDAR');
+  return lines.map(foldLine).join('\r\n') + '\r\n';
+}
+
 function renderPirthdays(pirthdays) {
   const container = document.getElementById('pirthday-list');
   container.innerHTML = '';
@@ -200,5 +255,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = { CONSTANTS, buildMilestones, calculatePirthdays };
+  module.exports = { CONSTANTS, buildMilestones, calculatePirthdays, buildICS };
 }
