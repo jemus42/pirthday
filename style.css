@@ -81,8 +81,12 @@ label {
 }
 
 input[type="date"] {
+  /* iOS Safari ignores width on native date controls; reset appearance so
+     width:100% is honored and the control stops overflowing to the right. */
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
-  min-width: 0; /* iOS/WebKit date control ignores width:100% and overflows right without this */
+  min-width: 0;
   max-width: 100%;
   padding: 1rem;
   font-size: 1.1rem;
